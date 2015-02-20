@@ -207,7 +207,7 @@ import dl_gui
 import get_USB_serial
 import glob
 import Gnuplot
-import gpib_SR830 as LIClass
+import gpib_SR830_meas_and_send as LIClass
 import gpibprologix as plgx
 ###import fft-0.0-alpha as fft
 #import math
