@@ -73,7 +73,7 @@ class sr830:
         # the stage will start to move when back to the calling program,
         # if trigger is still active other data will be transmitted
         
-    def read_data_binary_meas_and_send(stringa):
+    def read_data_binary_meas_and_send(self, stringa):
         ''' converts two HEX bytes - MSB first - to signed integer
             input string consists of multiples of 4 bytes, two bytes for channel X followed by two bytes for channelY '''
         # print stringa # 7fffffff00008000
