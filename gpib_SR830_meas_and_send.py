@@ -65,7 +65,7 @@ class sr830:
     def start_scan_meas_and_send(self):
         self.ext_trig(True)
         self.gpib.send(self.address, "STRD\n")
-        time.sleep(0.5) # scan is started after 0.5 s - p. 5-18 SR830 User Manual
+        time.sleep(1) # scan is started after 0.5 s - p. 5-18 SR830 User Manual
 
     def stop_scan_meas_and_send(self):
         self.ext_trig(False)
@@ -73,7 +73,25 @@ class sr830:
         # the stage will start to move when back to the calling program,
         # if trigger is still active other data will be transmitted
         
-        
+    def read_data_binary_meas_and_send(stringa):
+        ''' converts two HEX bytes - MSB first - to signed integer
+            input string consists of multiples of 4 bytes, two bytes for channel X followed by two bytes for channelY '''
+        # print stringa # 7fffffff00008000
+        stringa = [stringa[i:i+4] for i in range(0, len(stringa), 4)] # split string every two bytes
+        # print stringa # ['7fff', 'ffff', '0000', '8000']
+        stringa = [int(x, 16) for x in stringa] # convert hex to int
+        # print stringa # [32767, 65535, 0, 32768]
+        stringa = [x if x <= 2**15 - 1 else x - 2**16 for x in stringa] # two's complement if needed
+        # print stringa # [32767, -1, 0, -32768]
+        x = []
+        y = []
+        for i in range(0, len(stringa), 2): # extract x and y
+            x.append(stringa[i])
+            y.append(stringa[i + 1])
+        # print x # [32767, 0]
+        # print y # [-1, -32768]
+        return x, y
+
     def set_myaddr(self, addr):
         self.address    = addr
 

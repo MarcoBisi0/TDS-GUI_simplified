@@ -987,7 +987,7 @@ class DL(Frame):
                 ### end 2014-09-25
                             
                 ### 2014-09-30 thr_mis = misuraVeloce(self.pos_absolute, self.measurement_mode) ### 2014-03-11
-                thr_mis = misuraVeloce(self.pos_absolute.get(), self.segno_pos, self.step_size, self.to_go_dec) ### 2014-03-11
+                thr_mis = misuraMeasAndSend(self.pos_absolute.get(), self.segno_pos, self.step_size, self.to_go_dec) ### 2014-03-11
                 thr_mis.start()
                 
                 ### 2014-09-25
@@ -997,8 +997,13 @@ class DL(Frame):
                         time.sleep(0.001)
                     time.sleep(1) # just to be sure that the WIN machine is ready to acquire...
                 ### end 2014-09-25
-                    
+                
+                ### 2015-02-20
+                while not os.path.isfile('LockinReady'):
+                    time.sleep(0.001)
+                os.remove('LockinReady')
                 self.motor_steps_count()
+                time.sleep(1)
                 thr_mis.stop()
                 
             if self.measurement_mode.get() == 'scan':
@@ -1861,7 +1866,7 @@ class misuraMeasAndSend(threading.Thread):
         t0 = time.time()
         
         LI.start_scan_meas_and_send() # prepares for triggered acquisition
-
+        open('LockinReady', 'w').close()
         ### 2014-09-25
         if INTERFEROMETER:
             os.system('cp GRAFfname /home/marco/hp5529a/FNAME_win') # prepares filename for data saving
@@ -1869,15 +1874,18 @@ class misuraMeasAndSend(threading.Thread):
         ### end 2014-09-25
             
         print 'here we go in fast acquisition mode'
+        s = ''
         while not self.ask_to_stop.isSet():
-            s = LI.read()
-            print s
-            #time.sleep(0.01) # do nothing until all data are collected
+            s += LI.read()
+            ### print 'ho letto', s
+            #time.sleep(1) # do nothing until all data are collected
         LI.stop_scan_meas_and_send()
+        x, y = LI.read_data_binary_meas_and_send(s)
+        print x
+        print y
         print 'acquisition terminated'
         
-        exit()
-        
+        '''
         ### 2014-09-25
         if INTERFEROMETER:
             open('/home/marco/hp5529a/STOP_win', 'w').close() # stops the interferometer SW on win machine
@@ -1901,8 +1909,6 @@ class misuraMeasAndSend(threading.Thread):
             ### 2014-09-25
             if INTERFEROMETER:
                 fn = '/home/marco/hp5529a/' + fname.split('.')[0] + '_win.dat'
-                '''while not os.path.isfile(fn):
-                        time.sleep(0.1)'''
                 if os.path.isfile(fn):
                     ##fd_interf = open(fn, 'r')
                     L, T = ut.file_read_two(fn) ##fd_interf)
@@ -1950,14 +1956,6 @@ class misuraMeasAndSend(threading.Thread):
                 
             ### end 2014-09-25
             
-            '''chX, chY = LI.re_read_binary()
-            fd = open('ascii.dat', 'w')
-            for i in range(I): #len(chX)):
-                    fd.write(str(t[i]) + '\t' + str(self.starting_pos + self.direction_sign*i) + '\t' + str(i*2*2.5/2.99792458*1e-2) + '\t' + str(chX[i]) + '\tnan\t' + str(chY[i]) + '\tnan' + '\tnan' +'\n')
-            fd.close()'''
-            
-            '''thr_grafico = grafici('')
-            thr_grafico.start()'''
             ### 2014-09-29
             open('GRAFupdate', 'w').close()
             print 'data saved'
@@ -1967,7 +1965,7 @@ class misuraMeasAndSend(threading.Thread):
             open('GRAFstop', 'w').close()
         else:
             print 'nothing from the lockin'
-        
+        '''
     def stop(self):
         self.ask_to_stop.set()
 
