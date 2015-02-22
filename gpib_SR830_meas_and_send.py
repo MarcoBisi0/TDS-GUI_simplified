@@ -58,6 +58,12 @@ class sr830:
 
     ### 2015-02-20
     def read(self):
+        while True: # aspetta che l'interfaccia segnali la disponibilita' di qualcosa
+            a = self.spoll()
+            print a
+            #if a == '19\r\n': break
+            if a >= 16: # MAV asserted
+                break
         self.gpib.serial.write('++read\n')
         s = self.gpib.serial.read(4)
         return s
@@ -74,10 +80,27 @@ class sr830:
         # if trigger is still active other data will be transmitted
         
     def read_data_binary_meas_and_send(self, stringa):
-        ''' converts two HEX bytes - MSB first - to signed integer
-            input string consists of multiples of 4 bytes, two bytes for channel X followed by two bytes for channelY '''
+        stringa = stringa.rstrip()
+        x = []
+        sx = []
+        sy = []
+        x = [str(ord(xx)) for xx in stringa]
+        '''for i in range(len(stringa)):
+            x.append([str(ord(xx)) for xx in stringa[i]])'''
+        print 'x', x
+        for i in range(0, len(x), 4):
+            sx.append((int(x[i]) << 8) + int(x[i + 1]))
+            sy.append((int(x[i + 2]) << 8) + int(x[i + 3]))
+        sx = [xx if xx <= 2**15 - 1 else xx - 2**16 for xx in sx]
+        sy = [xx if xx <= 2**15 - 1 else xx - 2**16 for xx in sy]
+        return sx, sy
+
+        '''
+        # converts two HEX bytes - MSB first - to signed integer
+        # input string consists of multiples of 4 bytes, two bytes for channel X followed by two bytes for channelY
         # print stringa # 7fffffff00008000
         stringa = [stringa[i:i+4] for i in range(0, len(stringa), 4)] # split string every two bytes
+        print stringa
         # print stringa # ['7fff', 'ffff', '0000', '8000']
         stringa = [int(x, 16) for x in stringa] # convert hex to int
         # print stringa # [32767, 65535, 0, 32768]
@@ -91,6 +114,7 @@ class sr830:
         # print x # [32767, 0]
         # print y # [-1, -32768]
         return x, y
+        '''
 
     def set_myaddr(self, addr):
         self.address    = addr
