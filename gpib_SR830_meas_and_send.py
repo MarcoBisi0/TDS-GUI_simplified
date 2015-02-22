@@ -72,12 +72,12 @@ class sr830:
         self.ext_trig(True)
         self.gpib.send(self.address, "STRD\n")
         self.gpib.serial.write('++mode 0\n') # prologix in device mode
-        self.gpib.serial.write('++lon 1\n') # listen-only mode
+        #self.gpib.serial.write('++lon 1\n') # listen-only mode
         time.sleep(1) # scan is started after 0.5 s - p. 5-18 SR830 User Manual
 
     def stop_scan_meas_and_send(self):
         self.ext_trig(False)
-        self.gpib.serial.write('++lon 0\n') # disable listen-only mode
+        #self.gpib.serial.write('++lon 0\n') # disable listen-only mode
         self.gpib.serial.write('++mode 1\n') # prologix in controller mode
 
         time.sleep(0.2) # wait that everything is settled before returning

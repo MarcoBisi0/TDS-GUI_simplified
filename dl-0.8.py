@@ -1881,6 +1881,7 @@ class misuraMeasAndSend(threading.Thread):
             ### print 'ho letto', s
             #time.sleep(1) # do nothing until all data are collected
         LI.stop_scan_meas_and_send()
+        print 's', s
         x, y = LI.read_data_binary_meas_and_send(s)
         print x
         print y
