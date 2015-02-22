@@ -1865,7 +1865,7 @@ class misuraMeasAndSend(threading.Thread):
         LI = interfacce['lockin']
         t0 = time.time()
         
-        LI.start_scan_meas_and_send() # prepares for triggered acquisition
+        #@#LI.start_scan_meas_and_send() # prepares for triggered acquisition
         open('LockinReady', 'w').close()
         ### 2014-09-25
         if INTERFEROMETER:
@@ -1875,12 +1875,15 @@ class misuraMeasAndSend(threading.Thread):
             
         print 'here we go in fast acquisition mode'
         
-        s = ''
+        #@#s = ''
+        LI.aaa()
         while not self.ask_to_stop.isSet():
-            s += LI.read()
+            #@#s += LI.read()
+            time.sleep(0.001)
             ### print 'ho letto', s
             #time.sleep(1) # do nothing until all data are collected
-        LI.stop_scan_meas_and_send()
+        #@#LI.stop_scan_meas_and_send()
+        open('STOP', 'w').close()
         print 's', s
         x, y = LI.read_data_binary_meas_and_send(s)
         print x

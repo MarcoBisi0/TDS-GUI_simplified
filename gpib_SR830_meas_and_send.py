@@ -23,6 +23,7 @@ __version__ = '0.1'
 ###imports
 import gpibprologix as plgx
 import numpy as np
+import os
 import sys
 import time
 
@@ -55,6 +56,20 @@ class sr830:
         time.sleep(1)
             if not ans:
                 return(1)'''
+    
+    def aaa(self):
+        self.ext_trig(True)
+        self.gpib.send(self.address, "STRD\n")
+        time.sleep(0.7)
+        s = ''
+        print 'entering STOP loop'
+        while not os.path.isfile('STOP'):
+            self.gpib.serial.write('++read\n')
+            s += self.gpib.serial.read(4)
+            print 'I was supposed to read'
+            time.sleep(0.01)
+        return s
+ 
 
     ### 2015-02-20
     def read(self):
