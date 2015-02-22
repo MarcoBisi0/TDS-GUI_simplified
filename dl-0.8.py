@@ -1874,6 +1874,7 @@ class misuraMeasAndSend(threading.Thread):
         ### end 2014-09-25
             
         print 'here we go in fast acquisition mode'
+        
         s = ''
         while not self.ask_to_stop.isSet():
             s += LI.read()

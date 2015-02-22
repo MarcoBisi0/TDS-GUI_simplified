@@ -58,12 +58,12 @@ class sr830:
 
     ### 2015-02-20
     def read(self):
-        while True: # aspetta che l'interfaccia segnali la disponibilita' di qualcosa
+        '''while True: # aspetta che l'interfaccia segnali la disponibilita' di qualcosa
             a = self.spoll()
             print a
             #if a == '19\r\n': break
             if a >= 16: # MAV asserted
-                break
+                break'''
         self.gpib.serial.write('++read\n')
         s = self.gpib.serial.read(4)
         return s
@@ -71,10 +71,15 @@ class sr830:
     def start_scan_meas_and_send(self):
         self.ext_trig(True)
         self.gpib.send(self.address, "STRD\n")
+        self.gpib.serial.write('++mode 0\n') # prologix in device mode
+        self.gpib.serial.write('++lon 1\n') # listen-only mode
         time.sleep(1) # scan is started after 0.5 s - p. 5-18 SR830 User Manual
 
     def stop_scan_meas_and_send(self):
         self.ext_trig(False)
+        self.gpib.serial.write('++lon 0\n') # disable listen-only mode
+        self.gpib.serial.write('++mode 1\n') # prologix in controller mode
+
         time.sleep(0.2) # wait that everything is settled before returning
         # the stage will start to move when back to the calling program,
         # if trigger is still active other data will be transmitted
