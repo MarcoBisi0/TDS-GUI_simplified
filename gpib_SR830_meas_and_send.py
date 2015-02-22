@@ -66,7 +66,7 @@ class sr830:
         while not os.path.isfile('STOP'):
             self.gpib.serial.write('++read\n')
             s += self.gpib.serial.read(4)
-            print 'I was supposed to read'
+            print 'I was supposed to read', s
             time.sleep(0.01)
         return s
  

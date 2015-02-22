@@ -1876,102 +1876,21 @@ class misuraMeasAndSend(threading.Thread):
         print 'here we go in fast acquisition mode'
         
         #@#s = ''
-        LI.aaa()
-        while not self.ask_to_stop.isSet():
+        stringa = LI.aaa()
+        #@#while not self.ask_to_stop.isSet():
             #@#s += LI.read()
-            time.sleep(0.001)
+            #@#time.sleep(0.001)
             ### print 'ho letto', s
             #time.sleep(1) # do nothing until all data are collected
         #@#LI.stop_scan_meas_and_send()
-        open('STOP', 'w').close()
-        print 's', s
-        x, y = LI.read_data_binary_meas_and_send(s)
+        print 's', stringa
+        x, y = LI.read_data_binary_meas_and_send(stringa)
         print x
         print y
         print 'acquisition terminated'
-        
-        '''
-        ### 2014-09-25
-        if INTERFEROMETER:
-            open('/home/marco/hp5529a/STOP_win', 'w').close() # stops the interferometer SW on win machine
-            print 'asked hp to stop'
-        ### end 2014-09-25
 
-        print 'please, wait while data are saved to file'
-        t1 = time.time()
-        chX, chY = LI.stop_scan() #, chY
-        if len(chX) != 0: # got something from lockin
-            print 'read ' + str(len(chX)) + ' samples from lockin'
-            
-            fd = open('GRAFfname', 'r')
-            fname = string.strip(fd.readline())
-            fd.close()
-            ### 2014-09-29 os.remove('GRAFfname')
-
-            thr_grafico = grafici('')
-            thr_grafico.start()
-    
-            ### 2014-09-25
-            if INTERFEROMETER:
-                fn = '/home/marco/hp5529a/' + fname.split('.')[0] + '_win.dat'
-                if os.path.isfile(fn):
-                    ##fd_interf = open(fn, 'r')
-                    L, T = ut.file_read_two(fn) ##fd_interf)
-                    ##fd_interf.close()
-                    print 'read ' + str(len(L)) + ' samples from interferometer'
-            
-                    # look for a common length in the locking and interferometer data sets
-                    if len(chX) > len(L):
-                        I = len(L)
-                    else:
-                        I = len(chX)
-            
-                    fd = open(fname, 'a')
-                    fd.write('# total acquisition time = ' + str(T[-1] - T[0]) + "che unità?\n")
-                    #fd.write('# total acquisition time = ' + str(T[i-1] - T[0]) + "che unità?\n")
-                    for i in range(I): #len(chX)):
-                        fd.write(str(t[i]) + '\t' + str(T[i]) + '\t' + str(L[i]*2/2.99792458*1e-2) + '\t' + str(chX[i]) + '\tnan\t' + str(chY[i]) + '\tnan' + '\tnan' +'\n')
-                    fd.close()
-                    
-                    time.sleep(0.5)
-                    subprocess.call(MV_MEAS, shell = True)
-                else:
-                    print 'nothing from the interferometer'
-            else:
-                I = len(chX)
-                # not really the total execution time, but not so different...
-                fd = open(fname, 'a')
-                ### 2014-11-12 fd.write('# approximate acquisition time = ' + str(t1 - t0) + ' s\n')
-                if self.direction_sign == -1: # reverse chX and chY for increasing delays
-                    chX.reverse()
-                    chY.reverse()
-                    p = [self.starting_pos - self.t_g*self.s_s + TRIG_AFTER_STEPS*i*self.s_s for i in range(I)]
-                else:
-                    p = [self.starting_pos + TRIG_AFTER_STEPS*i*self.s_s for i in range(I)]
-                for i in range(I): #len(chX)):
-                    ### fd.write('0' + '\t' + str(self.starting_pos + (2*i/self.s_s - self.t_g)*self.s_s) + '\t' + str(i*2*self.s_s*STEP_SIZE/2.99792458*1e-2*1e-12) + '\t' + str(chX[i]) + '\tnan\t' + str(chY[i]) + '\tnan' + '\tnan' +'\n')
-                    #### fd.write('0' + '\t' + str(p[i]) + '\t' + str(i*self.s_s*2*STEP_SIZE/2.99792458*1e-2*1e-12) + '\t' + str(chX[i]) + '\tnan\t' + str(chY[i]) + '\tnan' + '\tnan' +'\n')
-                    ### 2014-12-01
-                    fd.write('0' + '\t' + str(p[i]) + '\t' + str(self.s_s*TRIG_AFTER_STEPS*i*2*STEP_SIZE/2.99792458*1e-2*1e-12) + '\t' + str(chX[i]) + '\tnan\t' + str(chY[i]) + '\tnan' + '\tnan' +'\n')
-                fd.close()
-                
-                time.sleep(0.5)
-                ### 2014-09-29 subprocess.call(MV_MEAS, shell = True)
-                ### 2014-09-29 c'è stessa chiamata in grafici
-                
-            ### end 2014-09-25
-            
-            ### 2014-09-29
-            open('GRAFupdate', 'w').close()
-            print 'data saved'
-            ### 2014-09-29
-            while os.path.isfile('GRAFupdate'):
-                time.sleep(0.1)
-            open('GRAFstop', 'w').close()
-        else:
-            print 'nothing from the lockin'
-        '''
     def stop(self):
+        open('STOP', 'w').close() #@#
         self.ask_to_stop.set()
 
 class seriale:
